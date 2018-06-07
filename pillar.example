@@ -28,3 +28,7 @@ rsyslog:
                                           # The default is to include `salt://rsyslog/files/50-default.conf`.
                                           # If you change the custom conf dict, make sure to
                                           # include the 50-default.conf as well if needed.
+
+  ruleset_default: local                  # Set a default ruleset
+  ruleset_udp: remote                     # Ruleset to use for UDP messages
+  ruleset_tcp: remote                     # Ruleset to use for TCP messages

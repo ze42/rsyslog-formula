@@ -22,16 +22,34 @@ $MarkMessagePeriod   {{ config.markmessageperiod|default('3600') }}
 #$ModLoad immark  # provides --MARK-- message capability
 {%- endif %}
 
-{% if config.listenudp|default(false) -%}
+{% set rulesets = [] %}
+{%- if config.listenudp|default(false) -%}
 # provides UDP syslog reception
 $ModLoad imudp
+{%-   if config.ruleset_udp|default(None) %}
+{%-     do rulesets.append(config.ruleset_udp) %}
+$RuleSet {{ config.ruleset_udp }}
+$InputUDPServerBindRuleset {{ config.ruleset_udp }}
+{%-   endif %}
 $UDPServerRun 514
 {%- endif %}
 
 {% if config.listentcp|default(false) -%}
 # provides TCP syslog reception
 $ModLoad imtcp
+{%-   if config.ruleset_tcp|default(None) %}
+{%-     do rulesets.append(config.ruleset_tcp) %}
+$RuleSet {{ config.ruleset_tcp }}
+$InputTCPServerBindRuleset {{ config.ruleset_tcp }}
+{%-   endif %}
 $InputTCPServerRun {{ config.listentcpprt|default('514') }}
+{%- endif %}
+
+{%- if rulesets or config.ruleset_default|default(false) %}
+{%    set default_ruleset = config.ruleset_default|default('default') %}
+# Default ruleset
+$RuleSet {{ default_ruleset }}
+$DefaultRuleset {{ default_ruleset }}
 {%- endif %}
 
 ###########################
